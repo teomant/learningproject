@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/">
+    <!-- Specify a JDBC datasource -->
+    <Resource name="learningproject"
+              auth="Container"
+              type="javax.sql.DataSource"
+              username="postgres"
+              password="cms@springfive"
+              driverClassName="org.postgresql.Driver"
+              url="jdbc:postgresql://localhost:5432/learningproject"
+              validationQuery="select 1"
+              maxActive="10"
+              maxIdle="4"/>
+</Context>
