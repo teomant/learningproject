@@ -108,6 +108,11 @@ public class MyController {
         return "login";
     }
 
+    @GetMapping("/accessDenied")
+    public String accessDenied(Model model) {
+        return "accessDenied";
+    }
+
     private boolean createUser(RegistrationForm registrationForm, String role){
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername(registrationForm.getUsername());

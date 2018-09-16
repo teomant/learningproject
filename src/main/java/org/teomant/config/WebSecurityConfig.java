@@ -10,9 +10,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.teomant.Application;
+import org.teomant.controller.CustomAccessDeniedHandler;
 
 import javax.sql.DataSource;
 
@@ -47,9 +49,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests().antMatchers("/login**").permitAll()
                 .and()
-                .authorizeRequests().antMatchers("/admin/**").hasRole("ADMIN")
+                .authorizeRequests().antMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                 .and()
-                .authorizeRequests().antMatchers("/user/**").hasRole("USER")
+                .authorizeRequests().antMatchers("/user/**").hasAuthority("ROLE_USER")
                 .and()
                 .authorizeRequests().antMatchers("/**").authenticated()
                 .and()
@@ -57,7 +59,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .logout().logoutSuccessUrl("/login").permitAll()
                 .and()
-                .exceptionHandling().accessDeniedPage("/")
+                .exceptionHandling().accessDeniedHandler(accessDeniedHandler())
                 .and()
                 .rememberMe().rememberMeParameter("remember-me")
                 .tokenRepository(persistentTokenRepository()).tokenValiditySeconds(38400)
@@ -74,5 +76,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return repo;
     }
 
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler(){
+        return new CustomAccessDeniedHandler();
+    }
 
 }
