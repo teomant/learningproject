@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -21,20 +23,19 @@ import javax.persistence.Table;
 @Setter
 @ToString(exclude = "user")
 @Entity
-@Table(name = "authorities")
-public class AuthoritiesEntity {
-
+@Table(name = "files")
+public class UserFileEntity {
     @Id
-    @SequenceGenerator( name = "authorities_sequence", sequenceName = "authorities_id_seq", allocationSize = 1 )
-    @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "authorities_sequence" )
+    @SequenceGenerator( name = "files_sequence", sequenceName = "files_id_seq", allocationSize = 1 )
+    @GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "files_sequence" )
     @Column(name = "id", updatable = false, insertable = false)
     private Long id;
-
-    @Column(name = "authority")
-    private String authority;
 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;
+
+    @Column(name = "file")
+    private byte[] file;
 }

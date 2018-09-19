@@ -12,15 +12,22 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.teomant.controller.forms.RegistrationForm;
 import org.teomant.controller.forms.validators.RegistrationValidator;
 import org.teomant.entity.AuthoritiesEntity;
 import org.teomant.entity.UserEntity;
+import org.teomant.entity.UserFileEntity;
 import org.teomant.service.AuthoritiesService;
+import org.teomant.service.UserFileService;
 import org.teomant.service.UserService;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.security.Principal;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping
@@ -31,6 +38,9 @@ public class MyController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserFileService userFileService;
 
     @Autowired
     private RegistrationValidator registrationValidator;
@@ -100,12 +110,20 @@ public class MyController {
 
     @GetMapping("/user/page")
     public String userPage(Model model, Principal principal) {
+        UserEntity user = userService.findUserByUsername(principal.getName());
+        user.setAuthorities(authoritiesService.getAuthoritiesByUser(user));
+//        user.setFiles(userFileService.findByUser(user));
+        model.addAttribute("fileIds", userFileService.findIdsByUser(user));
+        model.addAttribute("user",user);
         return "userPage";
     }
 
     @GetMapping("/login")
-    public String login(Model model) {
-        return "login";
+    public String login(Model model, Principal principal) {
+        if (principal==null) {
+            return "login";
+        }
+        else return "redirect:/";
     }
 
     @GetMapping("/accessDenied")
@@ -113,9 +131,38 @@ public class MyController {
         return "accessDenied";
     }
 
+    @PostMapping(value = "/uploadFile")
+    public String submit(@RequestParam("file") MultipartFile file, Model model, Principal principal) throws IOException {
+
+        UserEntity userEntity = userService.findUserByUsername(principal.getName());
+        UserFileEntity userFileEntity = new UserFileEntity();
+        userFileEntity.setFile(file.getBytes());
+        userFileEntity.setUser(userEntity);
+        userFileService.save(userFileEntity);
+
+        return "redirect:/user/page";
+    }
+
+    @GetMapping("/user/image")
+    @ResponseBody
+    public byte[] getImage(Model model,
+                           @RequestParam("id") Long id) {
+        return userFileService.findById(id).getFile();
+    }
+
+    @GetMapping("/user/me")
+    @ResponseBody
+    public UserEntity userRest(Model model, Principal principal){
+        UserEntity user = userService.findUserByUsername(principal.getName());
+        user.setFiles(userFileService.findByUser(user));
+        user.setAuthorities(authoritiesService.getAuthoritiesByUser(user));
+        return user;
+    }
+
     private boolean createUser(RegistrationForm registrationForm, String role){
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername(registrationForm.getUsername());
+        userEntity.setFiles(null);
         userEntity.setPassword(new BCryptPasswordEncoder().encode(registrationForm.getPassword()));
         AuthoritiesEntity authoritiesEntity = new AuthoritiesEntity();
         if (userService.findAll().isEmpty()){

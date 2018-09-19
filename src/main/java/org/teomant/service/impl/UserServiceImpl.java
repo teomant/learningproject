@@ -2,6 +2,7 @@ package org.teomant.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.teomant.entity.AuthoritiesEntity;
 import org.teomant.entity.UserEntity;
 import org.teomant.repository.AuthoritiesRepository;
@@ -25,6 +26,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public UserEntity findUserByUsername(String username) {
         return userRepository.findByUsername(username);
@@ -37,8 +39,15 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<UserEntity> findAll() {
         return userRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public UserEntity findById(Long id) {
+        return userRepository.findById(id).get();
     }
 }

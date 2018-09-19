@@ -13,5 +13,6 @@ public interface UserService {
     UserEntity findUserByUsername(String username);
     UserEntity save(UserEntity userEntity);
     List<UserEntity> findAll();
+    UserEntity findById(Long id);
 
 }
