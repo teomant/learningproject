@@ -14,7 +14,7 @@ public class Initializer implements WebApplicationInitializer {
     public void onStartup( ServletContext servletContext ){
         AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
         // регистрируем конфигурацию созданую высше
-        ctx.register( WebAppConfig.class, WebSecurityConfig.class, JpaConfig.class );
+        ctx.register( WebAppConfig.class, WebSecurityConfig.class, JpaConfig.class, SwaggerConfig.class );
         // добавляем в контекст слушателя с нашей конфигурацией
         servletContext.addListener( new ContextLoaderListener( ctx ) );
 
