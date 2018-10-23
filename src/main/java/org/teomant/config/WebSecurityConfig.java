@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
@@ -29,6 +30,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     DataSource dataSource;
 
+    @Autowired
+    private AuthenticationEntryPoint authEntryPoint;
+
     //оба
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -39,6 +43,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+
     }
 
     @Override
@@ -51,7 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests().antMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                 .and()
-                .authorizeRequests().antMatchers("/user/**").hasAuthority("ROLE_USER")
+                .authorizeRequests().antMatchers("/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 .and()
                 .authorizeRequests().antMatchers("/**").authenticated()
                 .and()
@@ -66,6 +71,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .csrf().disable();
 
+        http.httpBasic().authenticationEntryPoint(authEntryPoint);
+
     }
 
     //для страницы логина/пароля
@@ -75,6 +82,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         repo.setDataSource(dataSource);
         return repo;
     }
+
+
 
     @Bean
     public AccessDeniedHandler accessDeniedHandler(){

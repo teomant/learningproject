@@ -150,15 +150,6 @@ public class MyController {
         return userFileService.findById(id).getFile();
     }
 
-//    @GetMapping("/user/me")
-//    @ResponseBody
-//    public UserEntity userRest(Model model, Principal principal){
-//        UserEntity user = userService.findUserByUsername(principal.getName());
-//        user.setFiles(userFileService.findByUser(user));
-//        user.setAuthorities(authoritiesService.getAuthoritiesByUser(user));
-//        return user;
-//    }
-
     private boolean createUser(RegistrationForm registrationForm, String role){
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername(registrationForm.getUsername());

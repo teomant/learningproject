@@ -18,7 +18,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@ToString
+@ToString (exclude = {"messages","files","authorities"})
 @Entity
 @Table(name = "users")
 public class UserEntity {
@@ -37,6 +37,9 @@ public class UserEntity {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
     private List<AuthoritiesEntity> authorities;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    private List<MessageEntity> messages;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
     private List<UserFileEntity> files;
