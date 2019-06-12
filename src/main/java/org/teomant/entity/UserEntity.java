@@ -18,7 +18,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@ToString (exclude = {"messages","files","authorities"})
+@ToString (exclude = {"posts","files","authorities"})
 @Entity
 @Table(name = "users")
 public class UserEntity {
@@ -39,9 +39,15 @@ public class UserEntity {
     private List<AuthoritiesEntity> authorities;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
-    private List<MessageEntity> messages;
+    private List<PostEntity> posts;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
     private List<UserFileEntity> files;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "from")
+    private List<MessageEntity> messageFrom;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "to")
+    private List<MessageEntity> messageTo;
 
 }

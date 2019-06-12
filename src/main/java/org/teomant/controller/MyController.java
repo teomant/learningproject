@@ -1,6 +1,7 @@
 package org.teomant.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,7 +11,9 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -18,15 +21,20 @@ import org.springframework.web.multipart.MultipartFile;
 import org.teomant.controller.forms.RegistrationForm;
 import org.teomant.controller.forms.validators.RegistrationValidator;
 import org.teomant.entity.AuthoritiesEntity;
+import org.teomant.entity.MessageEntity;
 import org.teomant.entity.UserEntity;
 import org.teomant.entity.UserFileEntity;
 import org.teomant.service.AuthoritiesService;
+import org.teomant.service.MessagesService;
 import org.teomant.service.UserFileService;
 import org.teomant.service.UserService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -41,6 +49,9 @@ public class MyController {
 
     @Autowired
     private UserFileService userFileService;
+
+    @Autowired
+    private MessagesService messagesService;
 
     @Autowired
     private RegistrationValidator registrationValidator;
@@ -166,4 +177,48 @@ public class MyController {
         authoritiesService.save(authoritiesEntity);
         return true;
     }
+
+    @GetMapping("/chat/{id}")
+    public String getChat(Model model, Principal principal,
+                           @PathVariable("id") Long toId) {
+        UserEntity user = userService.findUserByUsername(principal.getName());
+        UserEntity to = userService.findById(toId);
+        List<MessageEntity> messages = messagesService.getFromToMessages(user,to);
+        messages.addAll(messagesService.getFromToMessages(to,user));
+        messages.sort((m1, m2) -> m1.getDate().compareTo(m2.getDate()));
+
+        model.addAttribute("from", user);
+        model.addAttribute("to", to);
+        model.addAttribute("messages", messages);
+        return "chatPage";
+    }
+
+    @PostMapping("/chat/{id}/newMessage")
+    @ResponseBody
+    public String newMessage(Principal principal, @PathVariable("id") Long toId,
+                             @RequestBody Map<String, String> requestBody , Model model){
+        try{
+            MessageEntity messageEntity = new MessageEntity();
+            messageEntity.setText(requestBody.get("messageText"));
+            messageEntity.setTo(userService.findById(toId));
+            messageEntity.setFrom(userService.findUserByUsername(principal.getName()));
+            messageEntity.setDate(LocalDateTime.now());
+            messagesService.save(messageEntity);
+            return "success";
+        }catch( IllegalArgumentException e ){
+            return "fail";
+        }
+    }
+
+    @GetMapping("/chat/{id}/messages")
+    @ResponseBody
+    public ResponseEntity<List<MessageEntity>> getMessages(Principal principal, @PathVariable("id") Long toId, Model model){
+        UserEntity user = userService.findUserByUsername(principal.getName());
+        UserEntity to = userService.findById(toId);
+        List<MessageEntity> messages = messagesService.getFromToMessages(user,to);
+        messages.addAll(messagesService.getFromToMessages(to,user));
+        messages.sort((m1, m2) -> m1.getDate().compareTo(m2.getDate()));
+        return ResponseEntity.ok(messages);
+    }
+
 }

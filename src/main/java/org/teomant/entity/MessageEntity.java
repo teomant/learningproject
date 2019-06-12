@@ -1,6 +1,8 @@
 package org.teomant.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -14,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -31,9 +34,16 @@ public class MessageEntity {
     @Column(name = "text")
     private String text;
 
-    @JsonIgnore
+    @JsonIgnoreProperties({"password", "authorities", "posts", "files", "messageFrom", "messageTo"})
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+    @JoinColumn(name = "from_user")
+    private UserEntity from;
 
+    @JsonIgnoreProperties({"password", "authorities", "posts", "files", "messageFrom", "messageTo"})
+    @ManyToOne
+    @JoinColumn(name = "to_user")
+    private UserEntity to;
+
+    @Column(name = "date")
+    private LocalDateTime date;
 }
