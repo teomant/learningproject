@@ -1,5 +1,6 @@
 package org.teomant.controller;
 
+import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,13 +29,16 @@ import org.teomant.service.AuthoritiesService;
 import org.teomant.service.MessagesService;
 import org.teomant.service.UserFileService;
 import org.teomant.service.UserService;
+import org.teomant.utils.EntityUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
@@ -55,6 +59,9 @@ public class MyController {
 
     @Autowired
     private RegistrationValidator registrationValidator;
+    
+    @Autowired
+    private EntityUtils entityUtils;
 
     @ModelAttribute( "registrationForm" )
     public RegistrationForm registrationForm(){
@@ -121,9 +128,9 @@ public class MyController {
 
     @GetMapping("/user/page")
     public String userPage(Model model, Principal principal) {
-        UserEntity user = userService.findUserByUsername(principal.getName());
-        user.setAuthorities(authoritiesService.getAuthoritiesByUser(user));
-//        user.setFiles(userFileService.findByUser(user));
+        UserEntity user = entityUtils.getUserEntity(principal.getName()
+                , UserEntity.USER_MAPPING.AUTHORITIES
+                , UserEntity.USER_MAPPING.FILES);
         model.addAttribute("fileIds", userFileService.findIdsByUser(user));
         model.addAttribute("user",user);
         return "userPage";
@@ -145,7 +152,7 @@ public class MyController {
     @PostMapping(value = "/uploadFile")
     public String submit(@RequestParam("file") MultipartFile file, Model model, Principal principal) throws IOException {
 
-        UserEntity userEntity = userService.findUserByUsername(principal.getName());
+        UserEntity userEntity = entityUtils.getUserEntity(principal.getName());
         UserFileEntity userFileEntity = new UserFileEntity();
         userFileEntity.setFile(file.getBytes());
         userFileEntity.setUser(userEntity);
@@ -153,6 +160,8 @@ public class MyController {
 
         return "redirect:/user/page";
     }
+
+
 
     @GetMapping("/user/image")
     @ResponseBody
@@ -181,7 +190,7 @@ public class MyController {
     @GetMapping("/chat/{id}")
     public String getChat(Model model, Principal principal,
                            @PathVariable("id") Long toId) {
-        UserEntity user = userService.findUserByUsername(principal.getName());
+        UserEntity user = entityUtils.getUserEntity(principal.getName());
         UserEntity to = userService.findById(toId);
         List<MessageEntity> messages = messagesService.getFromToMessages(user,to);
         messages.addAll(messagesService.getFromToMessages(to,user));
@@ -213,7 +222,7 @@ public class MyController {
     @GetMapping("/chat/{id}/messages")
     @ResponseBody
     public ResponseEntity<List<MessageEntity>> getMessages(Principal principal, @PathVariable("id") Long toId, Model model){
-        UserEntity user = userService.findUserByUsername(principal.getName());
+        UserEntity user = entityUtils.getUserEntity(principal.getName());
         UserEntity to = userService.findById(toId);
         List<MessageEntity> messages = messagesService.getFromToMessages(user,to);
         messages.addAll(messagesService.getFromToMessages(to,user));

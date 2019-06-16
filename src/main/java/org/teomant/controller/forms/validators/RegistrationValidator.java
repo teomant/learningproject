@@ -11,8 +11,12 @@ import org.teomant.service.UserService;
 @Component
 public class RegistrationValidator implements Validator {
 
+    private final UserService userService;
+
     @Autowired
-    UserService userService;
+    public RegistrationValidator(UserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     public boolean supports(Class<?> aClass) {

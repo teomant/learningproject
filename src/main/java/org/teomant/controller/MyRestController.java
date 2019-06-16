@@ -1,5 +1,6 @@
 package org.teomant.controller;
 
+import com.google.common.collect.Sets;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -17,24 +18,20 @@ import org.teomant.service.AuthoritiesService;
 import org.teomant.service.PostsService;
 import org.teomant.service.UserFileService;
 import org.teomant.service.UserService;
+import org.teomant.utils.EntityUtils;
 
 import java.security.Principal;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 public class MyRestController {
 
     @Autowired
-    private AuthoritiesService authoritiesService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private UserFileService userFileService;
-
-    @Autowired
     private PostsService postesService;
+
+    @Autowired
+    private EntityUtils entityUtils;
 
     @ApiOperation(value = "Info about user", notes = "All info about user")
     @ApiResponses(value = {
@@ -44,11 +41,12 @@ public class MyRestController {
     @GetMapping("/user/me")
     @ResponseBody
     public ResponseEntity<UserEntity> userRest(Model model, Principal principal){
-        UserEntity user = userService.findUserByUsername(principal.getName());
-        user.setFiles(userFileService.findByUser(user));
-        user.setAuthorities(authoritiesService.getAuthoritiesByUser(user));
-        user.setPosts(postesService.getPostsByUser(user));
-        user.setPassword("Nope! You must know it, if you`re here");
+        UserEntity user = entityUtils.getUserEntity(principal.getName()
+                , UserEntity.USER_MAPPING.FILES
+                , UserEntity.USER_MAPPING.AUTHORITIES
+                , UserEntity.USER_MAPPING.MESSAGE_TO
+                , UserEntity.USER_MAPPING.MESSAGES_FROM
+                , UserEntity.USER_MAPPING.POSTS);
         return ResponseEntity.ok(user);
     }
 
@@ -56,15 +54,11 @@ public class MyRestController {
     @ResponseBody
     public ResponseEntity<UserEntity> postPost(Model model, @RequestBody
             Map<String, String> requestBody, Principal principal){
-        UserEntity user = userService.findUserByUsername(principal.getName());
+        UserEntity user = entityUtils.getUserEntity(principal.getName());
         PostEntity postEntity = new PostEntity();
         postEntity.setUser(user);
         postEntity.setText(requestBody.get("text"));
         postesService.save(postEntity);
-        user.setFiles(userFileService.findByUser(user));
-        user.setAuthorities(authoritiesService.getAuthoritiesByUser(user));
-        user.setPosts(postesService.getPostsByUser(user));
-        user.setPassword("Nope! You must know it, if you`re here");
         return ResponseEntity.ok(user);
     }
 
