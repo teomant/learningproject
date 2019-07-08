@@ -4,12 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.teomant.entity.MessageEntity;
-import org.teomant.entity.PostEntity;
 import org.teomant.entity.UserEntity;
 import org.teomant.repository.MessageRepository;
-import org.teomant.repository.PostsRepository;
 import org.teomant.service.MessagesService;
-import org.teomant.service.PostsService;
 
 import java.util.List;
 
