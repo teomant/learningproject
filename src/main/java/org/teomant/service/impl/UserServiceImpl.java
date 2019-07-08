@@ -33,17 +33,19 @@ public class UserServiceImpl implements UserService {
     public UserEntity findUserByUsername(String username, UserEntity.USER_MAPPING... mappings) {
         UserEntity user = userRepository.findByUsername(username);
         Set<UserEntity.USER_MAPPING> mappingSet = Sets.newHashSet(mappings);
-        user.setMessageTo(mappingSet.contains(UserEntity.USER_MAPPING.MESSAGE_TO)
-                ? userRepository.getMessagesToByUserId(user.getId()) : null);
-        user.setMessageFrom(mappingSet.contains(UserEntity.USER_MAPPING.MESSAGES_FROM)
-                ? userRepository.getMessagesFromByUserId(user.getId()) : null);
-        user.setAuthorities(mappingSet.contains(UserEntity.USER_MAPPING.AUTHORITIES)
-                ? userRepository.getAuthoritiesByUserId(user.getId()) : null);
-        user.setFiles(mappingSet.contains(UserEntity.USER_MAPPING.FILES)
-                ? userRepository.getFilesByUserId(user.getId()) : null);
-        user.setPosts(mappingSet.contains(UserEntity.USER_MAPPING.POSTS)
-                ? userRepository.getPostsByUserId(user.getId()) : null);
-        user.setPassword("Nope");
+        if (!mappingSet.isEmpty()) {
+            user.setMessageTo(mappingSet.contains(UserEntity.USER_MAPPING.MESSAGE_TO)
+                    ? userRepository.findMessagesToByUserId(user.getId()) : null);
+            user.setMessageFrom(mappingSet.contains(UserEntity.USER_MAPPING.MESSAGES_FROM)
+                    ? userRepository.findMessagesFromByUserId(user.getId()) : null);
+            user.setAuthorities(mappingSet.contains(UserEntity.USER_MAPPING.AUTHORITIES)
+                    ? userRepository.findAuthoritiesByUserId(user.getId()) : null);
+            user.setFiles(mappingSet.contains(UserEntity.USER_MAPPING.FILES)
+                    ? userRepository.findFilesByUserId(user.getId()) : null);
+            user.setPosts(mappingSet.contains(UserEntity.USER_MAPPING.POSTS)
+                    ? userRepository.findPostsByUserId(user.getId()) : null);
+            user.setPassword("Nope");
+        }
         return user;
     }
 
@@ -62,7 +64,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<AuthoritiesEntity> findAuthById(Long id) {
-        return userRepository.getAuthoritiesByUserId(id);
+        return userRepository.findAuthoritiesByUserId(id);
     }
 
     @Transactional(readOnly = true)

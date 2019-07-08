@@ -56,15 +56,15 @@ public class MyRestController {
     @GetMapping("/user/me/authorities")
     @ResponseBody
     public ResponseEntity<List<AuthoritiesEntity>> userAuthRest(Model model, Principal principal){
-        return ResponseEntity.ok(userService.findAuthById(
-                userService.findUserByUsername(principal.getName()).getId()));
+        UserEntity user = userService.findUserByUsername(principal.getName());
+        return ResponseEntity.ok(userService.findAuthById(user.getId()));
     }
 
     @PostMapping(value = "/user/post", headers = "Content-Type=application/json")
     @ResponseBody
     public ResponseEntity<UserEntity> postPost(Model model, @RequestBody
             Map<String, String> requestBody, Principal principal){
-        UserEntity user = entityUtils.getUserEntity(principal.getName());
+        UserEntity user = userService.findUserByUsername(principal.getName());
         PostEntity postEntity = new PostEntity();
         postEntity.setUser(user);
         postEntity.setText(requestBody.get("text"));

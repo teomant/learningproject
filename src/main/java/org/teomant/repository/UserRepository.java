@@ -14,27 +14,27 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<UserEntity,Long> {
 
     @Query( "select ue.authorities from UserEntity ue where ue.id = :id" )
-    public List<AuthoritiesEntity> getAuthoritiesByUserId(
+    List<AuthoritiesEntity> findAuthoritiesByUserId(
             @Param("id")
                     Long id);
 
     @Query( "select ue.messageTo from UserEntity ue where ue.id = :id" )
-    List<MessageEntity> getMessagesToByUserId(
+    List<MessageEntity> findMessagesToByUserId(
             @Param("id")
                     Long id);
 
     @Query( "select ue.messageFrom from UserEntity ue where ue.id = :id" )
-    List<MessageEntity> getMessagesFromByUserId(
+    List<MessageEntity> findMessagesFromByUserId(
             @Param("id")
                     Long id);
 
     @Query( "select ue.files from UserEntity ue where ue.id = :id" )
-    List<UserFileEntity> getFilesByUserId(
+    List<UserFileEntity> findFilesByUserId(
             @Param("id")
                     Long id);
 
     @Query( "select ue.posts from UserEntity ue where ue.id = :id" )
-    List<PostEntity> getPostsByUserId(
+    List<PostEntity> findPostsByUserId(
             @Param("id")
                     Long id);
 

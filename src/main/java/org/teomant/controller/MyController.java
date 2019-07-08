@@ -124,7 +124,7 @@ public class MyController {
 
     @GetMapping("/user/page")
     public String userPage(Model model, Principal principal) {
-        UserEntity user = entityUtils.getUserEntity(principal.getName()
+        UserEntity user = userService.findUserByUsername(principal.getName()
                 , UserEntity.USER_MAPPING.AUTHORITIES
                 , UserEntity.USER_MAPPING.FILES);
         model.addAttribute("fileIds", userFileService.findIdsByUser(user));
@@ -148,7 +148,7 @@ public class MyController {
     @PostMapping(value = "/uploadFile")
     public String submit(@RequestParam("file") MultipartFile file, Model model, Principal principal) throws IOException {
 
-        UserEntity userEntity = entityUtils.getUserEntity(principal.getName());
+        UserEntity userEntity = userService.findUserByUsername(principal.getName());
         UserFileEntity userFileEntity = new UserFileEntity();
         userFileEntity.setFile(file.getBytes());
         userFileEntity.setUser(userEntity);
@@ -186,7 +186,7 @@ public class MyController {
     @GetMapping("/chat/{id}")
     public String getChat(Model model, Principal principal,
                            @PathVariable("id") Long toId) {
-        UserEntity user = entityUtils.getUserEntity(principal.getName());
+        UserEntity user = userService.findUserByUsername(principal.getName());
         UserEntity to = userService.findById(toId);
         List<MessageEntity> messages = messagesService.getFromToMessages(user,to);
         messages.addAll(messagesService.getFromToMessages(to,user));
@@ -218,7 +218,7 @@ public class MyController {
     @GetMapping("/chat/{id}/messages")
     @ResponseBody
     public ResponseEntity<List<MessageEntity>> getMessages(Principal principal, @PathVariable("id") Long toId, Model model){
-        UserEntity user = entityUtils.getUserEntity(principal.getName());
+        UserEntity user = userService.findUserByUsername(principal.getName());
         UserEntity to = userService.findById(toId);
         List<MessageEntity> messages = messagesService.getFromToMessages(user,to);
         messages.addAll(messagesService.getFromToMessages(to,user));

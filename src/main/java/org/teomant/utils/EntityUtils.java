@@ -38,6 +38,7 @@ public class EntityUtils {
         this.postsService = postsService;
     }
 
+    @Deprecated
     public UserEntity getUserEntity(String name, UserEntity.USER_MAPPING... mappings) {
         UserEntity user = userService.findUserByUsername(name);
         Set<UserEntity.USER_MAPPING> mappingSet = Sets.newHashSet(mappings);
@@ -55,6 +56,7 @@ public class EntityUtils {
         return user;
     }
 
+    @Deprecated
     public List<AuthoritiesEntity> authoritiesEntityList(UserEntity userEntity) {
         return userService.findAuthById(userEntity.getId());
     }
