@@ -10,9 +10,10 @@ import java.util.Optional;
 public interface UserService {
 
     Optional<UserEntity> getUserById(Long id);
-    UserEntity findUserByUsername(String username);
+    UserEntity findUserByUsername(String username, UserEntity.USER_MAPPING... mappings);
     UserEntity save(UserEntity userEntity);
     List<UserEntity> findAll();
+    List<AuthoritiesEntity> findAuthById(Long id);
     UserEntity findById(Long id);
 
 }

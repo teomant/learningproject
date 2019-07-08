@@ -1,6 +1,5 @@
 package org.teomant.controller;
 
-import com.google.common.collect.Sets;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -12,23 +11,26 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.teomant.entity.AuthoritiesEntity;
 import org.teomant.entity.PostEntity;
 import org.teomant.entity.UserEntity;
-import org.teomant.service.AuthoritiesService;
 import org.teomant.service.PostsService;
-import org.teomant.service.UserFileService;
 import org.teomant.service.UserService;
 import org.teomant.utils.EntityUtils;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @RestController
 public class MyRestController {
 
     @Autowired
     private PostsService postesService;
+
+    @Autowired
+    private UserService userService;
+
 
     @Autowired
     private EntityUtils entityUtils;
@@ -38,16 +40,24 @@ public class MyRestController {
             @ApiResponse(code = 200, message = "Here you are"),
             @ApiResponse(code = 404, message = "nope")
     })
+
     @GetMapping("/user/me")
     @ResponseBody
     public ResponseEntity<UserEntity> userRest(Model model, Principal principal){
-        UserEntity user = entityUtils.getUserEntity(principal.getName()
+        UserEntity user = userService.findUserByUsername(principal.getName()
                 , UserEntity.USER_MAPPING.FILES
                 , UserEntity.USER_MAPPING.AUTHORITIES
                 , UserEntity.USER_MAPPING.MESSAGE_TO
                 , UserEntity.USER_MAPPING.MESSAGES_FROM
                 , UserEntity.USER_MAPPING.POSTS);
         return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/user/me/authorities")
+    @ResponseBody
+    public ResponseEntity<List<AuthoritiesEntity>> userAuthRest(Model model, Principal principal){
+        return ResponseEntity.ok(userService.findAuthById(
+                userService.findUserByUsername(principal.getName()).getId()));
     }
 
     @PostMapping(value = "/user/post", headers = "Content-Type=application/json")

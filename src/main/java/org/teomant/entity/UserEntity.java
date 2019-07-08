@@ -50,7 +50,7 @@ public class UserEntity {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "to")
     private List<MessageEntity> messageTo;
 
-    public static enum USER_MAPPING {
+    public enum USER_MAPPING {
         AUTHORITIES, POSTS, FILES, MESSAGES_FROM, MESSAGE_TO
     }
 

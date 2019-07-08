@@ -33,7 +33,6 @@ public class AuthoritiesEntity {
     @Column(name = "authority")
     private String authority;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;

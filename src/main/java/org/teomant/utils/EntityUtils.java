@@ -2,16 +2,16 @@ package org.teomant.utils;
 
 import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.teomant.entity.AuthoritiesEntity;
 import org.teomant.entity.UserEntity;
-import org.teomant.repository.AuthoritiesRepository;
 import org.teomant.service.AuthoritiesService;
 import org.teomant.service.MessagesService;
 import org.teomant.service.PostsService;
 import org.teomant.service.UserFileService;
 import org.teomant.service.UserService;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -28,7 +28,9 @@ public class EntityUtils {
     private final PostsService postsService;
 
     @Autowired
-    public EntityUtils(UserService userService, MessagesService messagesService, AuthoritiesService authoritiesService, UserFileService userFileService, PostsService postsService) {
+    public EntityUtils(UserService userService, MessagesService messagesService
+            , AuthoritiesService authoritiesService, UserFileService userFileService
+            , PostsService postsService) {
         this.userService = userService;
         this.messagesService = messagesService;
         this.authoritiesService = authoritiesService;
@@ -51,5 +53,9 @@ public class EntityUtils {
                 ? postsService.getPostsByUser(user) : null);
         user.setPassword("Nope");
         return user;
+    }
+
+    public List<AuthoritiesEntity> authoritiesEntityList(UserEntity userEntity) {
+        return userService.findAuthById(userEntity.getId());
     }
 }
