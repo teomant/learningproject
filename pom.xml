@@ -37,7 +37,7 @@
         <spring-data-jpa.version>2.0.5.RELEASE</spring-data-jpa.version>
         <lombok.version>1.16.20</lombok.version>
         <tomcat-servlet-api.version>7.0.47</tomcat-servlet-api.version>
-        <jackson-databind.version>2.9.1</jackson-databind.version>
+        <jackson-databind.version>2.9.10.3</jackson-databind.version>
         <jackson-core.version>2.9.1</jackson-core.version>
         <jackson-annotations.version>2.9.1</jackson-annotations.version>
         <jstl.version>1.2</jstl.version>
