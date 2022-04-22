@@ -30,7 +30,7 @@
     </build>
 
     <properties>
-        <spring.version>5.0.4.RELEASE</spring.version>
+        <spring.version>5.3.19</spring.version>
         <security.version>5.0.0.RELEASE</security.version>
         <postgresql.version>9.4.1212.jre7</postgresql.version>
         <hibernate.version>5.2.15.Final</hibernate.version>
