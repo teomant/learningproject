@@ -34,7 +34,7 @@
         <security.version>5.0.0.RELEASE</security.version>
         <postgresql.version>9.4.1212.jre7</postgresql.version>
         <hibernate.version>5.2.15.Final</hibernate.version>
-        <spring-data-jpa.version>2.0.5.RELEASE</spring-data-jpa.version>
+        <spring-data-jpa.version>2.1.0.RELEASE</spring-data-jpa.version>
         <lombok.version>1.16.20</lombok.version>
         <tomcat-servlet-api.version>7.0.47</tomcat-servlet-api.version>
         <jackson-databind.version>2.9.1</jackson-databind.version>
